@@ -30,6 +30,8 @@ public class LookupMapLoadingService extends Periodical {
 	@Override
 	public void doRun() {
 		
+		LOG.info("Retrieving mongo collection for map reloading...");
+		
 		final MongoConnection mc = mongoConnection;
 		final String LOOKUP = "lookup";
 		

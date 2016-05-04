@@ -12,7 +12,8 @@ import java.util.Set;
  * Implement the PluginMetaData interface here.
  */
 public class LookupComponentMetaData implements PluginMetaData {
-    @Override
+    
+	@Override
     public String getUniqueId() {
         return "com.cisco.clip.lookup.LookupComponentPlugin";
     }

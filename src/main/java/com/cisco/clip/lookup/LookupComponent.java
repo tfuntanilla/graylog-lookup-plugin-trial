@@ -34,6 +34,8 @@ public class LookupComponent implements MessageFilter {
 	@Inject
 	public LookupComponent(MongoConnection mongoConnection) {
 		
+		LOG.info("Starting lookup component...");
+		
 		// retrieve lookup data map from MongoDB
 		DBCollection collection = mongoConnection.getDatabase().getCollection(LOOKUP);
 		DBCursor cursor = collection.find();
@@ -44,12 +46,13 @@ public class LookupComponent implements MessageFilter {
 		JsonElement je = parser.parse(doc.toString());
 		JsonObject json = je.getAsJsonObject();
 		mappings = json.getAsJsonArray("mappings");
-		LOG.info("Retrieved lookup data map: " + mappings.toString());
+		LOG.debug("Retrieved lookup data map: " + mappings.toString());
 
 		JsonElement mappingsObject = mappings.get(0);
 		JsonObject map = mappingsObject.getAsJsonObject();
 		
 		// put the mapping into the data map
+		LOG.info("Populating data map for the first time...");
 		for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
 		   dataMap.put(entry.getKey(), entry.getValue().getAsString());
 		}
@@ -68,7 +71,8 @@ public class LookupComponent implements MessageFilter {
 
 	@Override
 	public int getPriority() {
-		return 50;
+		// run just before rules filter is run...
+		return 29;
 	}
 	
 }
