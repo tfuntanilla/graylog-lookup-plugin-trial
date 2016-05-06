@@ -33,11 +33,13 @@ public class LookupComponent implements MessageFilter {
 	@Inject
 	public LookupComponent(MongoConnection mongoConnection) {
 		
-		LOG.info("Starting lookup component...");
-		
 		// retrieve lookup data map from MongoDB
 		DBCollection collection = mongoConnection.getDatabase().getCollection(LOOKUP);
 		DBCursor cursor = collection.find();
+		if (cursor != null) {
+			
+		}
+		
 		DBObject doc = cursor.one();	// get first document
 				
 		JsonArray mappings = new JsonArray();
@@ -45,13 +47,11 @@ public class LookupComponent implements MessageFilter {
 		JsonElement je = parser.parse(doc.toString());
 		JsonObject json = je.getAsJsonObject();
 		mappings = json.getAsJsonArray("mappings");	// get mappings array
-		LOG.info("Retrieved lookup data map: " + mappings.toString());
 
 		JsonElement mappingsObject = mappings.get(0);	// get first object in array
 		JsonObject map = mappingsObject.getAsJsonObject();
 		
 		// put the mapping into the data map
-		LOG.info("Populating data map for the first time...");
 		for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
 		   dataMap.put(entry.getKey(), entry.getValue().getAsString());
 		}	
@@ -61,13 +61,12 @@ public class LookupComponent implements MessageFilter {
 	@Override
 	public boolean filter(Message msg) {
 		
-		LOG.info("Performing lookup...");
 		Map<String, String> lookupDataMap = LookupComponent.dataMap;
 		String valueOfExistingField = (String) msg.getField("uuid");
 		if (lookupDataMap.containsKey(valueOfExistingField)) {
 			String valueForNewField = lookupDataMap.get(valueOfExistingField);
 			msg.addField("appurl", valueForNewField);
-			LOG.info("appurl" + " : " + valueForNewField);
+			msg.addField("doctype_", valueForNewField);
 		}
 		
 		return false;
@@ -80,8 +79,8 @@ public class LookupComponent implements MessageFilter {
 
 	@Override
 	public int getPriority() {
-		// run this filter first
-		return 1;
+		// run this filter after extractors
+		return 15;
 	}
 	
 }

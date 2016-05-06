@@ -23,13 +23,11 @@ public class LookupService {
 	 */
 	public static void lookup(Message msg, String existingField, String newFieldToAdd) {
 
-		LOG.info("Performing lookup...");
 		Map<String, String> lookupDataMap = LookupComponent.dataMap;
 		String valueOfExistingField = (String) msg.getField(existingField);
 		if (lookupDataMap.containsKey(valueOfExistingField)) {
 			String valueForNewField = lookupDataMap.get(valueOfExistingField);
 			msg.addField(newFieldToAdd, valueForNewField);
-			LOG.info(newFieldToAdd + " : " + valueForNewField);
 		}
 
 	}

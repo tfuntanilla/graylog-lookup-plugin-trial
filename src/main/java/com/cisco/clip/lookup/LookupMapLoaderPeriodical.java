@@ -38,8 +38,6 @@ public class LookupMapLoaderPeriodical extends Periodical {
 	@Override
 	public synchronized void doRun() {
 		
-		LOG.info("Retrieving mongo collection for map reloading...");
-		
 		final MongoConnection mc = mongoConnection;
 		
 		// retrieve lookup data map from MongoDB
@@ -56,15 +54,11 @@ public class LookupMapLoaderPeriodical extends Periodical {
 		JsonElement mappingsObject = mappings.get(0);
 		JsonObject map = mappingsObject.getAsJsonObject();
 		
-		LOG.info("Reloading lookup data map...");
-		
 		// clear lookup data map and reload mappings
 		LookupComponent.dataMap.clear();
 		for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
 			LookupComponent.dataMap.put(entry.getKey(), entry.getValue().getAsString());
 		}
-		
-		LOG.info("Reloading complete.");
 		
 	}
 
