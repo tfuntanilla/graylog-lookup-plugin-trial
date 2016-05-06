@@ -28,7 +28,6 @@ public class LookupComponent implements MessageFilter {
 	private static final Logger LOG = LoggerFactory.getLogger(LookupComponent.class);
 	
 	private static final String LOOKUP = "lookup";
-	
 	public static Map<String, String> dataMap = new HashMap<String, String>();
 	
 	@Inject
@@ -39,28 +38,38 @@ public class LookupComponent implements MessageFilter {
 		// retrieve lookup data map from MongoDB
 		DBCollection collection = mongoConnection.getDatabase().getCollection(LOOKUP);
 		DBCursor cursor = collection.find();
-		DBObject doc = cursor.one();
+		DBObject doc = cursor.one();	// get first document
 				
 		JsonArray mappings = new JsonArray();
 		JsonParser parser = new JsonParser();
 		JsonElement je = parser.parse(doc.toString());
 		JsonObject json = je.getAsJsonObject();
-		mappings = json.getAsJsonArray("mappings");
-		LOG.debug("Retrieved lookup data map: " + mappings.toString());
+		mappings = json.getAsJsonArray("mappings");	// get mappings array
+		LOG.info("Retrieved lookup data map: " + mappings.toString());
 
-		JsonElement mappingsObject = mappings.get(0);
+		JsonElement mappingsObject = mappings.get(0);	// get first object in array
 		JsonObject map = mappingsObject.getAsJsonObject();
 		
 		// put the mapping into the data map
 		LOG.info("Populating data map for the first time...");
 		for (Map.Entry<String, JsonElement> entry : map.entrySet()) {
 		   dataMap.put(entry.getKey(), entry.getValue().getAsString());
-		}
+		}	
 		
 	}
 
 	@Override
-	public boolean filter(Message arg0) {
+	public boolean filter(Message msg) {
+		
+		LOG.info("Performing lookup...");
+		Map<String, String> lookupDataMap = LookupComponent.dataMap;
+		String valueOfExistingField = (String) msg.getField("uuid");
+		if (lookupDataMap.containsKey(valueOfExistingField)) {
+			String valueForNewField = lookupDataMap.get(valueOfExistingField);
+			msg.addField("appurl", valueForNewField);
+			LOG.info("appurl" + " : " + valueForNewField);
+		}
+		
 		return false;
 	}
 
@@ -71,8 +80,8 @@ public class LookupComponent implements MessageFilter {
 
 	@Override
 	public int getPriority() {
-		// run just before rules filter is run...
-		return 29;
+		// run this filter first
+		return 1;
 	}
 	
 }

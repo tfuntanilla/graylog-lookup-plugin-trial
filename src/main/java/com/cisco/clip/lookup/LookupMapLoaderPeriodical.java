@@ -17,23 +17,30 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
 
-public class LookupMapLoadingService extends Periodical {
+/**
+ * Loads the lookup data map from MongoDB periodically.
+ * 
+ * @author tfuntani
+ *
+ */
+public class LookupMapLoaderPeriodical extends Periodical {
+
+	private static final Logger LOG = LoggerFactory.getLogger(LookupMapLoaderPeriodical.class);
 	
 	private MongoConnection mongoConnection;
-	private static final Logger LOG = LoggerFactory.getLogger(LookupMapLoadingService.class);
+	private static final String LOOKUP = "lookup";
 	
 	@Inject
-	public LookupMapLoadingService(MongoConnection mongoConnection) {
+	public LookupMapLoaderPeriodical(MongoConnection mongoConnection) {
 		this.mongoConnection = mongoConnection;
 	}
 
 	@Override
-	public void doRun() {
+	public synchronized void doRun() {
 		
 		LOG.info("Retrieving mongo collection for map reloading...");
 		
 		final MongoConnection mc = mongoConnection;
-		final String LOOKUP = "lookup";
 		
 		// retrieve lookup data map from MongoDB
 		DBCollection collection = mc.getDatabase().getCollection(LOOKUP);
@@ -69,13 +76,13 @@ public class LookupMapLoadingService extends Periodical {
 
 	@Override
 	protected Logger getLogger() {
-		return null;
+		return LOG;
 	}
 
 	@Override
 	public int getPeriodSeconds() {
-		// run every 15 min
-		return 600;
+		// run every 8 hr
+		return 28800;
 	}
 
 	@Override

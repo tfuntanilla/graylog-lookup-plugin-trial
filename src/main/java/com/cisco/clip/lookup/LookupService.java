@@ -6,6 +6,11 @@ import org.graylog2.plugin.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 
+ * @author tfuntani
+ *
+ */
 public class LookupService {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(LookupService.class);
@@ -24,7 +29,7 @@ public class LookupService {
 		if (lookupDataMap.containsKey(valueOfExistingField)) {
 			String valueForNewField = lookupDataMap.get(valueOfExistingField);
 			msg.addField(newFieldToAdd, valueForNewField);
-			LOG.debug(newFieldToAdd + " : " + valueForNewField);
+			LOG.info(newFieldToAdd + " : " + valueForNewField);
 		}
 
 	}

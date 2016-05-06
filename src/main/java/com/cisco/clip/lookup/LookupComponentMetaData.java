@@ -25,13 +25,11 @@ public class LookupComponentMetaData implements PluginMetaData {
 
     @Override
     public String getAuthor() {
-        // TODO Insert author name
         return "CLIP Team";
     }
 
     @Override
     public URI getURL() {
-        // TODO Insert correct plugin website
         return URI.create("https://www.graylog.org/");
     }
 
@@ -42,7 +40,6 @@ public class LookupComponentMetaData implements PluginMetaData {
 
     @Override
     public String getDescription() {
-        // TODO Insert correct plugin description
         return "Lookup component for CLIP.";
     }
 

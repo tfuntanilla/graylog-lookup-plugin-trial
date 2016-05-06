@@ -42,6 +42,6 @@ public class LookupComponentModule extends PluginModule {
          */
     	
     	addMessageFilter(LookupComponent.class);
-    	addPeriodical(LookupMapLoadingService.class);
+    	addPeriodical(LookupMapLoaderPeriodical.class);
     }
 }
